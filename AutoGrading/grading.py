@@ -8,11 +8,13 @@ import pandas as pd
 import filetype
 import fitz
 import os
+from dotenv import load_dotenv
 
-# DOC_PATH = "đặng quang tuấn 2500113447 lad 5.docx"
+load_dotenv()
+
 FOLDER_PATH = "C:\Documents\Code\AutoGrading\Tuan 5"
 TOPIC_FILE = "baitap_lab5.html"
-API_KEY = ""
+API_KEY = os.getenv('API_KEY')
 MODEL_NAME = "gemini-2.5-flash"
 RUBRIC = """
 Rubric chấm điểm (tổng 10 điểm):
