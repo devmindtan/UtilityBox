@@ -1,3 +1,4 @@
+import re
 from docx import Document
 from bs4 import BeautifulSoup
 from google import genai
@@ -12,21 +13,29 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-FOLDER_PATH = "C:\Documents\Code\AutoGrading\Tuan 5"
-TOPIC_FILE = "baitap_lab5.html"
+FOLDER_PATH = r"C:\Documents\Code\UtilityBox\AutoGrading\Tuan 6"
+TOPIC_FILE = "Lab2.CacWidgetCoBan.docx"
 API_KEY = os.getenv('API_KEY')
 MODEL_NAME = "gemini-2.5-flash"
+# RUBRIC = """
+# Rubric chấm điểm (tổng 10 điểm):
+# 1. Nộp code (4đ)
+# 2. Giải thích ý tưởng (4đ) (Giải thích ý tưởng của mình trước khi code không giải thích những dòng code)
+#     - Ngắn gọn xúc tích
+#     - Thể hiện mình hiểu được bài tập
+#     - Đánh giá cao những ý tưởng cá nhân không theo lối mòn
+#     => Nếu không làm được những cái trên sẽ bị trừ điểm
+# 3. Có kết chạy được (1đ)
+# 4. Trình bày gọn gàng đầy đủ (1đ)
+# Đặc biệt: nếu tên file không đúng theo quy chuẩn này HoTen_MSSV_lab6 (Ví dụ: NguyenVanA_22133422_lab6) sẽ trừ 1 điểm
+# """
+
 RUBRIC = """
 Rubric chấm điểm (tổng 10 điểm):
-1. Nộp code (4đ)
-2. Giải thích ý tưởng (4đ) (Giải thích ý tưởng của mình trước khi code không giải thích những dòng code)
-    - Ngắn gọn xúc tích
-    - Thể hiện mình hiểu được bài tập
-    - Đánh giá cao những ý tưởng cá nhân không theo lối mòn
-    => Nếu không làm được những cái trên sẽ bị trừ điểm
-3. Có kết chạy được (1đ)
-4. Trình bày gọn gàng đầy đủ (1đ)
-Đặc biệt: nếu tên file không đúng theo quy chuẩn này HoTen_MSSV_lab6 (Ví dụ: NguyenVanA_22133422_lab6) sẽ trừ 1 điểm
+Bài tập lần này không yêu cầu gì nhiều chỉ cần code theo xong thì giải thích những gì bạn hiểu trong đoạn code mẫu.
+1. Code (7đ)
+2. Giải thích (3đ)
+Lưu ý: giải thích bằng chính văn của mình, không đạo, không copy, hiểu gì nói đó, nếu vi phạm thì sẽ bị trừ điểm
 """
 
 
@@ -45,6 +54,17 @@ def detect_mine_type(image_data):
         mime_type = "image/png"
 
     return mime_type
+
+
+# Xử lí đầu vào
+def safe_json_loads(text):
+    # Cắt bỏ mọi thứ ngoài JSON thật
+    match = re.search(r"\{.*\}", text, re.DOTALL)
+    if match:
+        clean = match.group(0).strip()
+        return json.loads(clean)
+    else:
+        raise ValueError("Không tìm thấy JSON hợp lệ trong phản hồi")
 
 
 def read_doc_content():
@@ -160,33 +180,29 @@ def read_all_content():
 # ========== TẠO PROMPT ==========
 def create_prompt(file_name, content):
     return f"""
-    Bạn là một giảng viên đại học có nhiệm vụ chấm điểm bài làm của sinh viên.
-    Hãy đọc kỹ **đề bài**, **rubric**, và **nội dung bài làm** (có thể bao gồm text và hình ảnh).
+    Bạn là giảng viên đại học chấm bài sinh viên. Hãy đọc kỹ **đề bài**, **rubric**, và **nội dung bài làm** (text hoặc hình ảnh).
 
-    Yêu cầu:
+    ## Nhiệm vụ:
     1. Đánh giá chi tiết từng tiêu chí trong rubric.
     2. Ghi rõ điểm cho từng tiêu chí.
-    3. Tính tổng điểm (thang điểm 10) (lưu ý nếu tính kết quả ra có thập phân dưới .5 thì làm tròn xuống ngược lại thì làm tròn lên).
-    4. Đưa ra nhận xét tổng quát, ngắn gọn và chuyên nghiệp.
-    5. Phản hồi **duy nhất** ở định dạng JSON hợp lệ theo mẫu sau, **không thêm bất kỳ văn bản nào khác ngoài JSON** (lưu ý không có ```json ở đầu):
-
-    ---
-    {{
-    "name": "{file_name}" ,
-    "total_point": <số điểm trên 10>,
-    "detail": {{
-    "Tên tiêu chí 1": "[Điểm] điểm — [Nhận xét ngắn]",
-    "Tên tiêu chí 2": "[Điểm] điểm — [Nhận xét ngắn]",
-    "Tên tiêu chí 3": "[Điểm] điểm — [Nhận xét ngắn]",
-    ....
-    }},
-    "general": "<đoạn nhận xét tổng quát, 2–3 câu, giọng chuyên nghiệp, trung lập>"
-    }}
+    3. Tính tổng điểm (thang 10) (làm tròn .5 trở lên là lên, dưới .5 là xuống).
+    4. Nhận xét ngắn gọn (Dưới 30 chữ/tiêu chí)", chuyên nghiệp, xưng "em".
+    5. Phản hồi **duy nhất** ở định dạng JSON hợp lệ theo mẫu sau:
+    ---   
+       {{
+         "name": "{file_name}",
+         "total_point": <số điểm trên 10>,
+         "detail": {{
+           "Tên tiêu chí 1": "[Điểm] điểm — [Nhận xét ngắn]",
+           "Tên tiêu chí 2": "[Điểm] điểm — [Nhận xét ngắn]",
+           ...
+         }},
+         "general": "<nhận xét tổng quát 1–2 câu (Dưới 30 chữ)>"
+       }}
     ---
 
-    Thông tin để chấm:
-
-    **Đề bài:** (Lưu ý: đề bài có thể có ảnh)
+    ## Thông tin chấm:
+    **Đề bài:**
     {read_topic_content()}
 
     **Rubric:**
@@ -195,7 +211,7 @@ def create_prompt(file_name, content):
     **Nội dung bài làm (text):**
     {content}
 
-    Nếu có hình ảnh đi kèm, hãy xem xét nội dung trong ảnh để bổ sung vào đánh giá, và hãy lưu ý nội dung json phải viết đúng định dạng.
+    Nếu có hình ảnh, hãy xét nội dung trong ảnh nữa.
     """
 
 
@@ -222,7 +238,7 @@ def grading():
         images = doc["images"]
         prompt_text = create_prompt(file_name, content)
         res = genemi_call(prompt_text, images)
-        all_res.append(json.loads(res))
+        all_res.append(safe_json_loads(res))
 
     with open("output.json", "w", encoding="UTF-8") as f:
         json.dump(all_res, f, ensure_ascii=False, indent=4)
