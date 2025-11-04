@@ -67,11 +67,14 @@ def safe_json_loads(text):
         raise ValueError("Không tìm thấy JSON hợp lệ trong phản hồi")
 
 
-def read_doc_content():
+def read_doc_content(max_files=None):
     folder_path = Path(FOLDER_PATH)
     data = []
 
-    for doc_file in folder_path.glob("*.docx"):
+    for i, doc_file in enumerate(folder_path.glob("*.docx"), start=1):
+        if (max_files is not None and i > max_files):
+            break
+
         doc = Document(doc_file)
         rels = doc.part.rels
 
@@ -178,7 +181,7 @@ def read_all_content():
 
 
 # ========== TẠO PROMPT ==========
-def create_prompt(file_name, content):
+def create_prompt(file_name, content, level, response):
     return f"""
     Bạn là giảng viên đại học chấm bài sinh viên. Hãy đọc kỹ **đề bài**, **rubric**, và **nội dung bài làm** (text hoặc hình ảnh).
 
@@ -186,19 +189,27 @@ def create_prompt(file_name, content):
     1. Đánh giá chi tiết từng tiêu chí trong rubric.
     2. Ghi rõ điểm cho từng tiêu chí.
     3. Tính tổng điểm (thang 10) (làm tròn .5 trở lên là lên, dưới .5 là xuống).
-    4. Nhận xét ngắn gọn (Dưới 30 chữ/tiêu chí)", chuyên nghiệp, xưng "em".
-    5. Phản hồi **duy nhất** ở định dạng JSON hợp lệ theo mẫu sau:
-    ---   
-       {{
-         "name": "{file_name}",
-         "total_point": <số điểm trên 10>,
-         "detail": {{
-           "Tên tiêu chí 1": "[Điểm] điểm — [Nhận xét ngắn]",
-           "Tên tiêu chí 2": "[Điểm] điểm — [Nhận xét ngắn]",
-           ...
-         }},
-         "general": "<nhận xét tổng quát 1–2 câu (Dưới 30 chữ)>"
-       }}
+    4. Nhận xét ngắn gọn (dưới 30 chữ/tiêu chí), chuyên nghiệp, xưng "em".
+    5. Khi viết nhận xét chi tiết và tổng quát, **tham khảo `response` trong `ai_review` để điều chỉnh cách diễn đạt**, ví dụ:
+       - Nếu `response` nhấn mạnh bài vẫn trong giới hạn cho phép, hãy dùng lời khích lệ, nhẹ nhàng.
+       - Nếu `response` nhấn mạnh bài có dấu hiệu AI rõ rệt, hãy thể hiện sự nhắc nhở/nhấn mạnh nhưng vẫn trung thực, chuyên nghiệp.
+    6. Trả về **duy nhất** một JSON hợp lệ theo mẫu sau:
+
+    ---
+    {{
+      "name": "{file_name}",
+      "total_point": <số điểm trên 10>,
+      "detail": {{
+        "Tên tiêu chí 1": "[Điểm] điểm — [Nhận xét ngắn dựa trên response]",
+        "Tên tiêu chí 2": "[Điểm] điểm — [Nhận xét ngắn dựa trên response]",
+        ...
+      }},
+      "general": "<nhận xét tổng quát 1–2 câu dựa trên response>",
+      "ai_review": {{
+         "muc_do": {level},
+         "phan_hoi": "{response}"
+      }}
+    }}
     ---
 
     ## Thông tin chấm:
