@@ -95,7 +95,7 @@ for task in "${!RESULTS[@]}"; do
         # ERROR (5 ký tự)
         colored_res="${RED}ERROR${NC}"
         # Cần in thêm 10 khoảng trắng để đủ 15 ký tự của cột
-        printf "│ %-30s │ %b           │\n" "$task" "$colored_res"
+        printf "│ %-30.30s │ %b           │\n" "$task" "$colored_res"
     fi
 done
 echo "└──────────────────────────────┴─────────────────┘"
