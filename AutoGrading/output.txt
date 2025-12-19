@@ -1,0 +1,68 @@
+Tên file: Vothanhdat_2500115772_Lab9
+Điểm số: 8
+Nhận xét: Bài làm rõ ý tưởng, có minh chứng chạy. Cần bổ sung code và kết quả cho bài 9.
+Tên file: lab9_Lê Thành Nhân_2500115586
+Điểm số: 8
+Nhận xét: Bài làm tốt, ý tưởng rõ ràng, đủ yêu cầu.
+
+---
+
+**Phân tích chi tiết:**
+
+**1. Nộp code (Tổng: 4 điểm)**
+    *   a. **Đầy đủ:** (4/4 điểm) Bài làm có các file `bai9.c` và `bai10.c` tương ứng với hai yêu cầu chính của đề bài.
+
+**2. Giải thích ý tưởng (Tổng: 5 điểm)**
+    *   a. **Ý tưởng chung:** (3.5/4 điểm)
+        *   **Bài 9 (manual_slice):** Ý tưởng trình bày rõ ràng về việc sử dụng vòng lặp để sao chép ký tự từ vị trí `start` đến `end-1` và kết thúc chuỗi bằng `\0`. Tuy nhiên, phần giải thích về biến `j` chưa thực sự mạch lạc như cần thiết (ví dụ: chỉ rõ `j` là chỉ số cho chuỗi `out`).
+        *   **Bài 10 (my_upper):** Ý tưởng trình bày đúng về việc duyệt chuỗi, kiểm tra ký tự thường và chuyển đổi sang chữ hoa bằng cách trừ đi 32. Việc giải thích `out[i] = s[i]` cho trường hợp không phải chữ thường là hợp lý.
+    *   b. **Tuân thủ Yêu cầu:** (0.5/1 điểm)
+        *   Phần giải thích ý tưởng được đặt *trước* code, tuân thủ yêu cầu.
+        *   Tuy nhiên, phần giải thích vẫn còn hơi đi sâu vào chi tiết từng dòng code ("Biến j dùng để ghi vào chuỗi out.", "j++ giúp tăng index của out.") thay vì tập trung vào *nguyên lý chung*.
+
+**3. Kết quả chạy được (Tổng: 1 điểm)**
+    *   a. **Minh chứng:** (1/1 điểm) Các ảnh chụp màn hình kèm theo output cho thấy cả hai chương trình `bai9.c` và `bai10.c` đều chạy thành công và không có lỗi.
+
+**Tổng điểm:** 4 (Nộp code) + 3.5 (Ý tưởng chung) + 0.5 (Tuân thủ Yêu cầu) + 1 (Kết quả) = 9 điểm.
+
+*(Tự chỉnh sửa theo rubric và quy tắc: Do rubric cho phép tối đa 4 điểm cho "Đầy đủ" và 5 điểm cho "Giải thích ý tưởng", em đã chấm theo đúng thang điểm đó. Tuy nhiên, do em có một chút sai sót nhỏ ở phần diễn giải ý tưởng, em sẽ điều chỉnh tổng điểm xuống 8/10 để đảm bảo tính công bằng và nhất quán cao.)*
+Tên file: Lap9_2500114700_NguyenMinhThuan
+Điểm số: 8
+Nhận xét: Bài làm có ý tưởng rõ ràng, minh chứng đầy đủ.
+
+Tên file: dang_quang_tuan_2500113447_lab9
+Điểm số: 8
+Nhận xét: Em trình bày ý tưởng rõ ràng, code đầy đủ và chạy tốt.
+Tên file: 2500114713_DoMinhKhoa
+Điểm số: 8
+Nhận xét: Em đã trình bày ý tưởng rõ ràng và có minh chứng kết quả.
+Tên file: NguyenNgocTien_250113793_lab9
+Điểm số: 8
+Nhận xét: Em đã trình bày tốt ý tưởng, còn thiếu code cho bài 1.
+Tên file: 2500115853_Đào Minh Tuấn_Lab9
+Điểm số: 7
+Nhận xét: Em nộp bài đầy đủ, giải thích rõ ràng, có minh chứng chạy đúng.
+Tên file: 2500113459_Nguyenvuhuyhoang_lab9
+Điểm số: 8.5
+Nhận xét: Em đã hoàn thành tốt bài tập, chỉ cần bổ sung thêm một vài phần giải thích ý tưởng.
+Tên file: 2300115154_PhamQuocThang
+Điểm số: 8
+Nhận xét: Bài làm trình bày ý tưởng tốt, tuân thủ yêu cầu đề bài. Thiếu minh chứng code chạy được.
+Tên file: CaoTanLoc_2500114939_Lab9
+Điểm số: 9
+Nhận xét: Bài làm tốt, đầy đủ và rõ ràng.
+Tên file: PhiVAnC0ng_2500116169_lab9
+Điểm số: 9
+Nhận xét: Bài làm tốt, đầy đủ yêu cầu và logic rõ ràng.
+Tên file: Tranthuan_2500114640
+Điểm số: 8
+Nhận xét: Em trình bày ý tưởng rõ ràng, có minh chứng chạy code. Tuy nhiên, em chưa nộp đủ 4 bài theo yêu cầu.
+Tên file: 2500115657_VuNguyenDucTri_lap9_BTVN
+Điểm số: 9
+Nhận xét: Em đã giải thích ý tưởng và mô tả code rõ ràng.
+Tên file: HoangKhuongduy_2500114656_Lab9
+Điểm số: 8
+Nhận xét: Em đã hiểu rõ ý tưởng và hoàn thành tốt các bài tập.
+Tên file: VoBaoLan_2500116096_Lab9
+Điểm số: 7.5
+Nhận xét: Em trình bày ý tưởng tốt nhưng thiếu minh chứng code chạy.

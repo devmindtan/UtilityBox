@@ -1,0 +1,47 @@
+version: "3"
+
+services:
+  loki:
+    image: grafana/loki:latest
+    container_name: ${LOKI_CONTAINER_NAME}
+    user: "root"
+    restart: always  # <-- Tự động chạy lại khi lỗi hoặc reboot máy
+    ports:
+      - "${LOKI_PORT}:3100"
+    volumes:
+      - ./configs/loki-config.yaml:/etc/loki/local-config.yaml
+      - loki_data:/tmp/loki
+    command: -config.file=/etc/loki/local-config.yaml
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: ${GRAFANA_CONTAINER_NAME}
+    restart: always  # <-- Tự động chạy lại
+    ports:
+      - "${GRAFANA_PORT}:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=${GF_AUTH_ANONYMOUS_ENABLED}
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=${GF_AUTH_ANONYMOUS_ORG_ROLE}
+    volumes:
+      - ./configs/data-source.yaml:/etc/grafana/provisioning/datasources/ds.yaml
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - loki
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: ${PROMTAIL_CONTAINER_NAME}
+    restart: always  # <-- Tự động chạy lại
+    volumes:
+      - ./configs/promtail-config.yaml:/etc/promtail/config.yml
+      - /var/log:/var/log 
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/config.yml
+    ports:
+      - "${PROMTAIL_PORT}:9080"
+    depends_on:
+      - loki
+      
+volumes:
+  loki_data:
+  grafana_data:

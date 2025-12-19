@@ -1,0 +1,73 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      # Thêm 2 dòng này để bật Security
+      - ELASTIC_PASSWORD=minhtan2003
+      - xpack.security.enabled=true
+      - xpack.security.authc.api_key.enabled=true
+      - xpack.security.http.ssl.enabled=false
+    ports:
+      - 9200:9200
+      ##- 8220:8220
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.12.0
+    container_name: logstash
+    ports:
+      - 5044:5044
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.12.0
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      # Khai báo user hệ thống để Kibana có thể login vào ES
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=gBMr6eRdlu7iZKm4oaei
+      # Khóa chính để mã hóa Dashboards, Alerts
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=baO1Cg2Q8JhwcPNShjrkjqOD8+eF45qHOCVQD6cIHBs=
+      # Khóa bảo mật phiên làm việc (Session)
+      - XPACK_SECURITY_ENCRYPTIONKEY=pPwkLBU5I7SULf/oQDlN+fO9Kj9YtXjcEc1aIjr/R3E=
+      # Khóa hỗ trợ xuất báo cáo PDF/CSV
+      - XPACK_REPORTING_ENCRYPTIONKEY=IZ7we1cfdSIjzJfexhA8T66qQ5i7u0Ocl0IW92k68vs=
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+      
+#docker exec -it elasticsearch /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto
+#docker exec -it elasticsearch bin/elasticsearch-reset-password -u kibana_system -i
+
+
+##Changed password for user apm_system
+##PASSWORD apm_system = vBvdynMFTtK8xxXUqivk
+
+##Changed password for user kibana_system
+##PASSWORD kibana_system = gBMr6eRdlu7iZKm4oaei
+
+##Changed password for user kibana
+##PASSWORD kibana = YIYIn5V0YyklQHKHNblN
+
+##Changed password for user logstash_system
+##PASSWORD logstash_system = tJUVl9m7EFIhr7JFFjYR
+
+##Changed password for user beats_system
+##PASSWORD beats_system = zQ3Ww3sjbSTa2Tb0kuew
+
+##Changed password for user remote_monitoring_user
+##PASSWORD remote_monitoring_user = s0dpdsUFgiyymn0kd9FM
+
+##Changed password for user elastic
+##PASSWORD elastic = 9EcF28PV5UM5w3N6glsJ
+
+##Token:
+## AAEAAWVsYXN0aWMvZmxlZXQtc2VydmVyL3Rva2VuLTE3NjYwNDE3OTI4MDU6bFVNdFh4WjFTdktGMVZMaDFodk44Zw
+
+## Docker:
+## sudo usermod -aG docker root	

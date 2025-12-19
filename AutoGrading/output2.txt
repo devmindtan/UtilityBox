@@ -1,0 +1,30 @@
+Tên file: PhiVanC0ng_2500116169_lab10
+Điểm số: 10
+Nhận xét: Em đã hoàn thành bài tập xuất sắc, code chạy tốt và ý tưởng trình bày rõ ràng.
+Tên file: NguyenNgocTien_2500113793_Lab10
+Điểm số: 10
+Nhận xét: Bài làm của em hoàn thành xuất sắc các yêu cầu đề ra, ý tưởng rõ ràng và code chạy tốt.
+Tên file: Nguyenvuhuyhoang_2500113459_lab10
+Điểm số: 9
+Nhận xét: Bài làm của em hoàn thành tốt các yêu cầu, tuy nhiên cần lưu ý trình bày ý tưởng trước code để đạt điểm tối đa.
+Tên file: dang quang tuan _2500113447
+Điểm số: 7.75
+Nhận xét: Em đã giải thích ý tưởng khá rõ ràng và code chạy thành công. Tuy nhiên, một số bài tập còn thiếu hoặc chưa đúng yêu cầu đề bài.
+Tên file: Lab10_VoThanhDat_2500115772
+Điểm số: 3
+Nhận xét: Em cần trình bày rõ ràng ý tưởng và hoàn thiện đúng yêu cầu đề bài cho các bài tập. Chú ý các yêu cầu về vị trí số chẵn/lẻ.
+Tên file: BTtrenlop_lap10_VuNguyenDucTri_2500115657 (2)
+Điểm số: 3
+Nhận xét: Em cần bổ sung đầy đủ các bài tập theo yêu cầu và trình bày rõ ràng ý tưởng giải quyết trước khi viết code.
+Tên file: HoangKhuongduy_2500114656_Lab10
+Điểm số: 10
+Nhận xét: Em đã hoàn thành xuất sắc các yêu cầu của bài tập. Bài làm của em đầy đủ, rõ ràng và chạy đúng.
+Tên file: Tranthuan_2500114640
+Điểm số: 8
+Nhận xét: Em đã nộp đầy đủ và code chạy được; tuy nhiên, cần xem lại yêu cầu đề bài cho Bài 3 và Bài 4 để khớp ý tưởng.
+Tên file: 2500116096_VoBaoLan_Lab10
+Điểm số: 9.0
+Nhận xét: Em làm bài đầy đủ, ý tưởng rõ ràng. Tuy nhiên, kết quả bài đếm chẵn lẻ cần kiểm tra lại để chính xác hơn.
+Tên file: CaoTanLoc_2500114939_Lab10
+Điểm số: 6.25
+Nhận xét: Bài làm có đủ code, nhưng phần giải thích ý tưởng và minh chứng kết quả chạy còn nhiều điểm chưa nhất quán.

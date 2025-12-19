@@ -1,0 +1,8 @@
+# Tải bộ cài
+wget https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-7.17.10-linux-x86_64.tar.gz
+
+# Giải nén
+tar -xzf elastic-agent-7.17.10-linux-x86_64.tar.gz
+
+# Truy cập vào thư mục vừa giải nén
+cd elastic-agent-7.17.10-linux-x86_64
