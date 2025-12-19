@@ -21,7 +21,7 @@ FOLDER_PATH = (
     r"/home/devmindtan/Documents/Code/UtilityBox/AutoGrading/Assignments/Lab9/"
 )
 TOPIC_FILE = FOLDER_PATH + r"/Topic/Bai_tap_string_p2.docx"
-API_KEY = "AIzaSyAFTB2zxZs23M9QNeyAJszpLy8_dcvPJE8"
+API_KEY = ""
 MODEL_NAME = "gemma-3-12b"
 
 # ========== INIT CLIENT ==========
