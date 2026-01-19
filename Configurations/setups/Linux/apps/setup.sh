@@ -63,7 +63,7 @@ log_status "git"
 sudo apt-fast install -y -q build-essential 
 log_status "build-essential"
 
-sudo apt-fast install -y -q p7zip-full 
+sudo apt-fast install -y -q p7zip-full
 log_status "p7zip-full "
 
 sudo apt-fast install -y -q unrar 

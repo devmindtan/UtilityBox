@@ -1,0 +1,97 @@
+{
+  "ssh_connections": [
+    {
+      "host": "my-dell-pc",
+      "username": "devmindtan",
+      "args": [],
+      "projects": [],
+    },
+    {
+      "host": "100.83.193.42",
+      "username": "devmindtan",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/home/devmindtan/Documents/Data/code/./"],
+        },
+      ],
+      "nickname": "my-aorus-pc",
+    },
+    {
+      "host": "raspberrypi",
+      "username": "devmindtan",
+      "args": [],
+      "projects": [],
+    },
+  ],
+  "terminal": {
+    "font_family": "CaskaydiaCove Nerd Font Mono",
+    "font_size": 13.0,
+  },
+  "disable_ai": true,
+  "colorize_brackets": true,
+  "inlay_hints": {
+    "edit_debounce_ms": 100,
+    "show_background": true,
+    "enabled": true,
+  },
+  "soft_wrap": "editor_width",
+  "theme": {
+    "mode": "dark",
+    "light": "Gruvbox Dark",
+    "dark": "Gruvbox Dark Hard",
+  },
+  "icon_theme": "Material Icon Theme",
+  "tabs": { "file_icons": true },
+  "languages": {
+    "Python": {
+      "language_servers": ["..."],
+    },
+    "C": {
+      "format_on_save": "off",
+      "tab_size": 2,
+    },
+    "Go": {
+      "language_servers": ["gopls"],
+      "format_on_save": "on",
+      "code_actions_on_format": {
+        "source.organizeImports": true,
+      },
+    },
+    "Ruby": {
+      "language_servers": ["solargraph", "rubocop"],
+      "format_on_save": "on",
+    },
+    "HTML": {
+      "format_on_save": "on",
+      "tab_size": 2,
+    },
+  },
+
+  "lsp": {
+    "gopls": {
+      "initialization_options": {
+        "hints": {
+          "assignVariableTypes": true,
+          "compositeLiteralFields": true,
+          "compositeLiteralTypes": true,
+          "constantValues": true,
+          "functionTypeParameters": true,
+          "parameterNames": true,
+          "rangeVariableTypes": true,
+        },
+      },
+    },
+    "solargraph": {
+      "initialization_options": {
+        "diagnostics": true,
+        "formatting": true,
+      },
+    },
+    // "nginx": {
+    //   "binary": {
+    //     "path": "/home/devmindtan/.venvs/common-py312/bin/nginx-language-server",
+    //   },
+    // },
+  },
+}
