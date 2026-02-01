@@ -17,6 +17,7 @@ fcitx5-qt
 fcitx5-unikey
 fd
 feh
+fzf
 git
 grub
 gst-plugin-pipewire
@@ -27,6 +28,7 @@ intel-ucode
 k9s
 kitty
 kubectl
+lazygit
 libpulse
 lightdm
 lightdm-gtk-greeter
@@ -38,6 +40,8 @@ nano
 neovim
 networkmanager
 nfs-utils
+nodejs
+npm
 open-iscsi
 openssh
 pipewire
@@ -52,9 +56,11 @@ sof-firmware
 sudo
 system-config-printer
 tailscale
+tk
 tmux
 ufw
 unzip
+wget
 wireplumber
 wpa_supplicant
 xclip

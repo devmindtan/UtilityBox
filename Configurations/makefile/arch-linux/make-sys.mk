@@ -1,9 +1,18 @@
+PYTHON_VENV = ~/Documents/venv/venv-py314/bin/python3
+CAM_DIR = ~/Documents/code/UtilityBox/Apps/Camera
+
 install-onlyoffice:
 	@echo "--- Đang cài đặt OnlyOffice và Font ---"
 	@yay -S --needed --noconfirm onlyoffice-bin ttf-ms-fonts
 
 install-chrome:
 	@yay -S --needed --noconfirm google-chrome
+
+camera:
+	@echo "Starting camera..."
+	@cd $(CAM_DIR) && \
+	QT_LOGGING_RULES='*.debug=false;qt.qpa.fonts=false' \
+	$(PYTHON_VENV) main.py 2>/dev/null
 
 unikey-on:
 	@echo "--- Khởi động bộ gõ ---"
