@@ -25,6 +25,7 @@ install-sound:
 
 backup-configs:
 	@cp ~/.config/i3/config ~/Documents/code/UtilityBox/Configurations/setups/Arch/i3/config
+	@cp ~/.config/i3status/config ~/Documents/code/UtilityBox/Configurations/setups/Arch/i3status/config
 	@cp ~/.zshrc ~/Documents/code/UtilityBox/Configurations/tools/zsh/.zshrc
 	@cp ~/.p10k.zsh ~/Documents/code/UtilityBox/Configurations/tools/zsh/.p10k.zsh
 	@cp -r ~/.config/nvim/* ~/Documents/code/UtilityBox/Configurations/tools/nvim/
