@@ -103,8 +103,14 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-neofetch
+fastfetch
 export PATH=$PATH:$HOME/.local/bin
 export NVM_DIR="$HOME/.nvm"
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
+ms() {
+    make -f ~/Documents/code/UtilityBox/Configurations/makefile/arch-linux/make-sys.mk $1
+}
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"

@@ -1,0 +1,6 @@
+google-chrome
+onlyoffice-bin
+ttf-meslo-nerd-font-powerlevel10k
+ttf-ms-fonts
+yay-bin
+yay-bin-debug
