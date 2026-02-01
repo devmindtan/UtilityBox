@@ -33,6 +33,22 @@ backup-configs:
 	@pacman -Qqem > ~/Documents/code/UtilityBox/Configurations/setups/Arch/aur_list.txt  # Gói từ AUR
 	@echo "--- Đã sao lưu các file cấu hình quan trọng ---"
 
+restore-configs:
+	@echo "--- Đang khôi phục cấu hình từ UtilityBox ---"
+	@cp ~/Documents/code/UtilityBox/Configurations/setups/Arch/i3/config ~/.config/i3/config
+	@cp ~/Documents/code/UtilityBox/Configurations/setups/Arch/i3status/config ~/.config/i3status/config
+	@cp ~/Documents/code/UtilityBox/Configurations/tools/zsh/.zshrc ~/.zshrc
+	@cp ~/Documents/code/UtilityBox/Configurations/tools/zsh/.p10k.zsh ~/.p10k.zsh
+	@mkdir -p ~/.config/nvim && cp -r ~/Documents/code/UtilityBox/Configurations/tools/nvim/* ~/.config/nvim/
+	@echo "--- Đã khôi phục xong. Hãy nhấn Mod+Shift+R để reload i3 ---"
+
+restore-packages:
+	@echo "--- Đang cài đặt các gói từ repo chính ---"
+	@sudo pacman -S --needed --noconfirm - < ~/Documents/code/UtilityBox/Configurations/setups/Arch/pkg_list.txt
+	@echo "--- Đang cài đặt các gói từ AUR (yay) ---"
+	@yay -S --needed --noconfirm - < ~/Documents/code/UtilityBox/Configurations/setups/Arch/aur_list.txt
+	@echo "--- Hoàn tất cài đặt toàn bộ phần mềm! ---"
+
 git-push:
 	@echo "--- Đang đẩy dữ liệu lên GitHub ---"
 	@cd ~/Documents/code/UtilityBox/ && \

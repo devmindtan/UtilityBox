@@ -112,5 +112,29 @@ export XMODIFIERS=@im=fcitx
 ms() {
     make -f ~/Documents/code/UtilityBox/Configurations/makefile/arch-linux/make-sys.mk $1
 }
+venv() {
+    local venv_name=$1
+    local venv_path="$HOME/Documents/venv/$venv_name"
+
+    if [[ -d "$venv_path" ]]; then
+        # Kích hoạt venv
+	source "$venv_path/bin/activate"
+
+        # Thu thập thông tin
+        local pkg_count=$(pip list --format=freeze | wc -l)
+        local venv_size=$(du -sh "$venv_path" | cut -f1)
+        local py_version=$(python --version)
+
+        # Hiển thị thông tin
+	echo "---------------------------------------"
+        echo "Connected: $venv_name"
+        echo "Packages:  $pkg_count"
+        echo "Size:      $venv_size"
+        echo "Version:   $py_version"
+        echo "---------------------------------------"
+    else
+        echo "❌ Không tìm thấy: $venv_name tại $venv_path"
+    fi
+}
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
