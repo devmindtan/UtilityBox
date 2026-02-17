@@ -1,6 +1,8 @@
+dblab-bin
 google-chrome
 onlyoffice-bin
 ttf-meslo-nerd-font-powerlevel10k
 ttf-ms-fonts
+visual-studio-code-bin
 yay-bin
 yay-bin-debug
