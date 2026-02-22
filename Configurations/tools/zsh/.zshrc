@@ -110,7 +110,6 @@ export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx
 export SDL_IM_MODULE=fcitx
-export ANTHROPIC_API_KEY=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
 
 ms() {
     make -f ~/Documents/code/UtilityBox/Configurations/makefile/arch-linux/make-sys.mk $1
