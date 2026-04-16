@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    // File Layout
+    "rootDir": "./src", // Thông báo cho TypeScript rằng toàn bộ code nguồn nằm trong thư mục src. Nó sẽ không quan tâm đến các file .ts nằm ngoài thư mục này.
+    "outDir": "./dist", // Sau khi bạn chạy lệnh tsc (build), toàn bộ file .js đã chuyển đổi sẽ được đổ vào thư mục dist.
+
+    // Environment Settings
+    "module": "nodenext", // Hỗ trợ cả ESM (import/export) và CommonJS (require).
+    "target": "esnext", // Sử dụng những tính năng mới nhất của JS.
+    // For nodejs:
+    "types": ["node"], // Dòng này bảo TS rằng: "Hãy nạp toàn bộ kiểu dữ liệu của Node.js vào dự án này cho tôi". Nếu không có nó, khi bạn gõ process.env.PORT, TS sẽ gạch chân đỏ lòm vì không biết process là cái gì.
+    "lib": ["esnext"], // Nó cho TS biết những "từ vựng" nào được coi là hợp lệ trong JavaScript phiên bản mới nhất (esnext).
+    // and npm install -D @types/node
+
+    // Other Outputs
+    "sourceMap": true, // Tạo ra các file .map giúp tìm ra lỗi ở dòng nào khi đang chạy trên production
+    "declaration": true,
+    "declarationMap": true, 
+
+    // Stricter Typechecking Options
+    "noUncheckedIndexedAccess": true, // Sẽ cảnh báo rằng giá trị có thể là undefined nếu mảng đó không đủ phần tử.
+    "exactOptionalPropertyTypes": true, // Bình thường nếu bạn có một thuộc tính optional { age?: number }, bạn có thể gán cho nó là undefined. Khi bật cái này lên, TS bắt buộc bạn: hoặc là không có thuộc tính đó, hoặc là phải có giá trị number. Bạn không được phép gán { age: undefined } một cách tường minh. Nó giúp dữ liệu sạch hơn.
+
+    // Style Options
+    "noImplicitReturns": true, // Ép bạn phải return ở mọi ngóc ngách của hàm. Nếu một hàm có nhánh if có return nhưng nhánh else thì không, TS sẽ báo lỗi ngay. Điều này tránh việc hàm vô tình trả về undefined.
+    "noImplicitOverride": true, // Rất hữu ích khi dùng Class. Nếu bạn viết một hàm trùng tên với hàm của lớp cha (override), bạn bắt buộc phải thêm từ khóa override. Điều này giúp tránh việc bạn vô tình ghi đè hàm của cha mà không biết.
+    "noUnusedLocals": true, // Báo lỗi một biến không dùng đến
+    "noUnusedParameters": true, // Báo lỗi hàm có tham số truyền vào nhưng bạn không sử dụng trong thân hàm
+    // "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true, // Buộc bạn phải sử dụng cú pháp ngoặc vuông obj["key"] thay vì dấu chấm obj.key khi truy cập vào các thuộc tính không được định nghĩa rõ ràng (dynamic properties).
+
+    // Recommended Options
+    "strict": true, // Kích hoạt tất cả các chế độ kiểm tra lỗi cao nhất
+    "jsx": "react-jsx", // Cấu hình cách TS xử lý các file .tsx. Với giá trị này, bạn có thể dùng React mà không cần import React from 'react' ở đầu mỗi file (từ React 17+).
+    "verbatimModuleSyntax": true, // Nó ép bạn phải phân biệt rõ ràng khi nào import logic, khi nào import kiểu dữ liệu (phải dùng import type ...).
+    "isolatedModules": true, // Đảm bảo mỗi file của bạn có thể được biên dịch độc lập. Điều này cực kỳ quan trọng nếu bạn dùng các công cụ build siêu tốc như Vite hay SWC, vì chúng dịch từng file một mà không nhìn toàn bộ dự án.
+    "noUncheckedSideEffectImports": true, // Ngăn chặn việc bạn import một file theo kiểu "side-effect" (ví dụ: import "./style.css") nếu file đó không thực sự tồn tại hoặc có vấn đề, giúp tránh lỗi lúc runtime.
+    "moduleDetection": "force", // Ép TypeScript coi mọi file là một "module" (có phạm vi riêng), ngay cả khi file đó không có lệnh import hay export. Điều này tránh việc các biến bị trùng tên giữa các file khác nhau (lỗi global scope).
+    "skipLibCheck": true, // Bỏ qua việc kiểm tra lỗi trong các thư viện ở node_modules
+  },
+  "include": ["src/**/*.ts"], // Chỉ định rõ các file cần biên dịch (ở đây là mọi file .ts trong src).
+  "exclude": ["node_modules", "dist"] // Những thư mục cần bỏ qua để tăng tốc độ biên dịch
+}
