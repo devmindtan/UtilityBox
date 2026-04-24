@@ -350,6 +350,7 @@ backup-configs:
 	@cp ~/.config/i3status/config ~/Documents/code/UtilityBox/Configurations/setups/Arch/i3status/config
 	@cp ~/.zshrc ~/Documents/code/UtilityBox/Configurations/tools/zsh/.zshrc
 	@cp ~/.p10k.zsh ~/Documents/code/UtilityBox/Configurations/tools/zsh/.p10k.zsh
+	@cp -r ~/.oh-my-zsh/custom/* ~/Documents/code/UtilityBox/Configurations/tools/zsh/.oh-my-zsh/custom/
 	@cp -r ~/.config/nvim/* ~/Documents/code/UtilityBox/Configurations/tools/nvim/
 	@pacman -Qqen > ~/Documents/code/UtilityBox/Configurations/setups/Arch/pkg_list.txt
 	@pacman -Qqem > ~/Documents/code/UtilityBox/Configurations/setups/Arch/aur_list.txt
@@ -362,6 +363,7 @@ restore-configs:
 	@cp ~/Documents/code/UtilityBox/Configurations/tools/zsh/.zshrc ~/.zshrc
 	@cp ~/Documents/code/UtilityBox/Configurations/tools/zsh/.p10k.zsh ~/.p10k.zsh
 	@mkdir -p ~/.config/nvim && cp -r ~/Documents/code/UtilityBox/Configurations/tools/nvim/* ~/.config/nvim/
+	@mkdir -p ~/.oh-my-zsh/custom && cp -r ~/Documents/code/UtilityBox/Configurations/tools/zsh/custom/* ~/.oh-my-zsh/custom/
 	@echo "✅ --- Đã khôi phục xong. Nhấn Mod+Shift+R để reload i3 ---"
 
 restore-packages:
