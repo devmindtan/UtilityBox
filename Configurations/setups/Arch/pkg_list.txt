@@ -3,6 +3,7 @@ alsa-utils
 arandr
 base
 base-devel
+bat
 bluez
 bluez-utils
 brightnessctl
@@ -13,6 +14,7 @@ docker
 docker-buildx
 dotnet-sdk
 efibootmgr
+eza
 fastfetch
 fcitx5
 fcitx5-configtool
@@ -72,6 +74,7 @@ protobuf
 python-pip
 rclone
 ripgrep
+rsync
 rtkit
 rust
 rust-wasm
@@ -100,5 +103,6 @@ xdot
 xorg-server
 xorg-xinit
 xsel
+yazi
 zram-generator
 zsh

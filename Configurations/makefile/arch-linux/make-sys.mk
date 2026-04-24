@@ -350,7 +350,9 @@ backup-configs:
 	@cp ~/.config/i3status/config ~/Documents/code/UtilityBox/Configurations/setups/Arch/i3status/config
 	@cp ~/.zshrc ~/Documents/code/UtilityBox/Configurations/tools/zsh/.zshrc
 	@cp ~/.p10k.zsh ~/Documents/code/UtilityBox/Configurations/tools/zsh/.p10k.zsh
-	@cp -r ~/.oh-my-zsh/custom/* ~/Documents/code/UtilityBox/Configurations/tools/zsh/.oh-my-zsh/custom/
+	@rm -rf ~/Documents/code/UtilityBox/Configurations/tools/zsh/.oh-my-zsh
+	@mkdir -p ~/Documents/code/UtilityBox/Configurations/tools/zsh/.oh-my-zsh/custom
+	@rsync -av --exclude='.git' ~/.oh-my-zsh/custom/ ~/Documents/code/UtilityBox/Configurations/tools/zsh/.oh-my-zsh/custom/
 	@cp -r ~/.config/nvim/* ~/Documents/code/UtilityBox/Configurations/tools/nvim/
 	@pacman -Qqen > ~/Documents/code/UtilityBox/Configurations/setups/Arch/pkg_list.txt
 	@pacman -Qqem > ~/Documents/code/UtilityBox/Configurations/setups/Arch/aur_list.txt

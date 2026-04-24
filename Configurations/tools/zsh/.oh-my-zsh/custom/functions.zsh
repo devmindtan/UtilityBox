@@ -1,13 +1,40 @@
 devdoctor() {
-    local tools=(python3 uv node npm rustc cargo java javac docker kubectl fzf rg fd)
-    echo "=== Dev Doctor ==="
-    for t in "${tools[@]}"; do
-        if command -v "$t" >/dev/null 2>&1; then
-            printf "%-10s ✅ %s\n" "$t" "$("$t" --version 2>/dev/null | head -n 1)"
-        else
-            printf "%-10s ❌\n" "$t"
-        fi
+  local reset='\033[0m'
+  local bold='\033[1m'
+  local green='\033[38;5;114m'   # xanh lá pastel
+  local red='\033[38;5;210m'     # hồng pastel
+  local blue='\033[38;5;117m'    # xanh dương pastel
+  local yellow='\033[38;5;222m'  # vàng pastel
+  local gray='\033[38;5;250m'    # xám nhạt
+
+  local -A categories
+  categories=(
+    "Languages"   "python3 node rustc java javac"
+    "Package Mgr" "uv nvm npm cargo"
+    "DevOps"      "docker kubectl"
+    "CLI Tools"   "fzf rg fd eza bat"
+  )
+
+  local order=("Languages" "Package Mgr" "DevOps" "CLI Tools")
+
+  echo
+  printf "${bold}${blue}  Dev Doctor${reset}\n"
+  printf "${gray}─────────────────────────────────────────${reset}\n"
+
+  for category in "${order[@]}"; do
+    printf "\n${bold}${yellow}▸ %s${reset}\n" "$category"
+    for tool in ${(z)categories[$category]}; do
+      if command -v "$tool" >/dev/null 2>&1; then
+        local version=$("$tool" --version 2>/dev/null | head -n1)
+        printf "  ${green}✔${reset} ${bold}%-10s${reset} ${gray}%s${reset}\n" "$tool" "$version"
+      else
+        printf "  ${red}✘${reset} ${bold}%-10s${reset} ${gray}not found${reset}\n" "$tool"
+      fi
     done
+  done
+
+  printf "\n${gray}─────────────────────────────────────────${reset}\n"
+  echo
 }
 ms() {
     local mkfile="$HOME/Documents/code/UtilityBox/Configurations/makefile/arch-linux/make-sys.mk"
