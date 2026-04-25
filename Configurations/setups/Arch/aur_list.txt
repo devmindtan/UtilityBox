@@ -2,6 +2,7 @@ bruno-bin
 dblab-bin
 google-chrome
 onlyoffice-bin
+smem
 ttf-meslo-nerd-font-powerlevel10k
 ttf-ms-fonts
 visual-studio-code-bin

@@ -1,6 +1,12 @@
 # Cấu hình fzf
 # Set up fzf key bindings and fuzzy completion
-eval "$(fzf --zsh)"
+if fzf --version | grep -qE "0\.(4[8-9]|[5-9])"; then
+  # Nếu bản fzf >= 0.48 (thường là trên Arch)
+  eval "$(fzf --zsh)"
+else
+  # Nếu bản cũ (thường là Ubuntu), dùng cách load truyền thống
+  [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+fi
 
 fg="#CBE0F0"
 bg="#011628"
@@ -39,4 +45,28 @@ _fzf_comprun() {
     ssh)          fzf --preview 'dig {}'                   "$@" ;;
     *)            fzf --preview "$show_file_or_dir_preview" "$@" ;;
   esac
+}
+
+# Check port với fzf
+fport() {
+  local port
+  # Lấy danh sách port, dùng sudo nhưng đã được cấp NOPASSWD nên sẽ không hỏi pass
+  port=$(sudo ss -tunlp | grep LISTEN | fzf --header "Chọn Port để xem chi tiết" --layout=reverse | awk '{print $5}' | cut -d: -f2)
+  
+  # Chỉ chạy lsof nếu biến port không rỗng
+  if [ -n "$port" ]; then
+    sudo lsof -i :$port
+  fi
+}
+# Check RAM và Kill với fzf
+fmem() {
+  local pid
+  pid=$(smem -rt -n 20 --columns="pid user command pss" | \
+    fzf --header-lines=1 --layout=reverse --header "Chọn Process để KILL (Tính theo PSS)" | \
+    awk '{print $1}')
+  
+  if [ -n "$pid" ]; then
+    echo "Đang kill PID: $pid"
+    kill -9 $pid
+  fi
 }
