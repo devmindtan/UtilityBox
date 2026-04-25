@@ -350,6 +350,7 @@ backup-configs:
 	@cp ~/.config/i3status/config ~/Documents/code/UtilityBox/Configurations/setups/Arch/i3status/config
 	@cp ~/.zshrc ~/Documents/code/UtilityBox/Configurations/tools/zsh/.zshrc
 	@cp ~/.p10k.zsh ~/Documents/code/UtilityBox/Configurations/tools/zsh/.p10k.zsh
+	@rsync -av --delete ~/.config/kitty/ ~/Documents/code/UtilityBox/Configurations/tools/kitty/
 	@rm -rf ~/Documents/code/UtilityBox/Configurations/tools/zsh/.oh-my-zsh
 	@mkdir -p ~/Documents/code/UtilityBox/Configurations/tools/zsh/.oh-my-zsh/custom
 	@rsync -av --exclude='.git' ~/.oh-my-zsh/custom/ ~/Documents/code/UtilityBox/Configurations/tools/zsh/.oh-my-zsh/custom/
