@@ -242,6 +242,7 @@ mic-help:
 	@echo "🎙️ Mic quick commands:"
 	@echo "  make -f ... mic-check         # Kiểm tra trạng thái microphone"
 	@echo "  make -f ... mic-use-laptop    # Chuyển sang mic laptop"
+	@echo "  make -f ... mic-use-wired     # Chuyển sang mic nối dây (jack 3.5mm)"
 	@echo "  make -f ... mic-use-bt        # Chuyển sang mic Bluetooth (HFP/HSP)"
 	@echo "  make -f ... mic-unmute        # Bỏ mute mic default"
 	@echo "  make -f ... mic-move-streams  # Chuyển app đang thu sang default source"
@@ -269,6 +270,22 @@ mic-use-laptop:
 	fi; \
 	if [ -z "$$SRC" ]; then \
 		echo "❌ Không tìm thấy laptop microphone source"; \
+		exit 1; \
+	fi; \
+	pactl set-default-source "$$SRC"; \
+	pactl set-source-mute "$$SRC" 0; \
+	pactl set-source-volume "$$SRC" 80%; \
+	echo "✅ Default source -> $$SRC"
+
+mic-use-wired:
+	@echo "🎧 --- CHUYỂN SANG MIC NỐI DÂY ---"
+	@SRC=$$(pactl list sources | awk 'BEGIN{RS="Source #"; FS="\n"} /Name: alsa_input\./ && /Active Port: analog-input-headset-mic/ {for(i=1;i<=NF;i++) if($$i ~ /Name: /){sub(/^.*Name: /, "", $$i); print $$i; exit}}'); \
+	if [ -z "$$SRC" ]; then \
+		SRC=$$(pactl list sources short | awk '/alsa_input\..*(headset|Headset|Mic2|mic2)/{print $$2; exit}'); \
+	fi; \
+	if [ -z "$$SRC" ]; then \
+		echo "❌ Không tìm thấy mic nối dây (headset jack)"; \
+		echo "⚠️  Hãy cắm mic 3.5mm và kiểm tra lại bằng: make -f ... mic-check"; \
 		exit 1; \
 	fi; \
 	pactl set-default-source "$$SRC"; \

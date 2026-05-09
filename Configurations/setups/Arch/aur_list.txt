@@ -1,6 +1,7 @@
 bruno-bin
 dblab-bin
 google-chrome
+microsoft-edge-stable-bin
 onlyoffice-bin
 smem
 ttf-meslo-nerd-font-powerlevel10k
