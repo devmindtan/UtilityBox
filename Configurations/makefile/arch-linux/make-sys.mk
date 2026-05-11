@@ -1,6 +1,7 @@
 PYTHON_VENV = ~/Documents/venv/venv-py314/bin/python3
 CAM_DIR = ~/Documents/code/UtilityBox/Apps/Camera
 SELF_MK = $(abspath $(lastword $(MAKEFILE_LIST)))
+AUDIO_HDMI_SINK ?= alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__HDMI1__sink
 
 # ========================================
 # 🎯 INSTALL ALL - Setup hệ thống từ đầu
@@ -156,6 +157,8 @@ audio-help:
 	@echo "🔊 Audio quick commands:"
 	@echo "  make -f ... audio-check        # Kiểm tra trạng thái âm thanh"
 	@echo "  make -f ... audio-use-speaker  # Chuyển sang loa laptop"
+	@echo "  make -f ... audio-use-hdmi     # Chuyển sang âm thanh HDMI (ưu tiên HDMI1)"
+	@echo "  make -f ... audio-use-hdmi1    # Ép sang HDMI1"
 	@echo "  make -f ... audio-use-bt       # Chuyển sang tai nghe Bluetooth"
 	@echo "  make -f ... audio-move-streams # Chuyển app đang phát sang default sink"
 	@echo "  make -f ... audio-restart      # Restart PipeWire + WirePlumber"
@@ -190,6 +193,45 @@ audio-use-speaker:
 		exit 1; \
 	fi; \
 	pactl set-default-sink "$$SINK"; \
+	pactl set-sink-mute "$$SINK" 0; \
+	pactl set-sink-volume "$$SINK" 80%; \
+	echo "✅ Default sink -> $$SINK"
+
+audio-use-hdmi:
+	@$(MAKE) --no-print-directory -f $(SELF_MK) audio-use-hdmi1
+
+audio-use-hdmi1:
+	@echo "🖥️ --- CHUYỂN SANG HDMI AUDIO ---"
+	@CARD=$$(pactl list cards short | awk '/alsa_card\.pci-/{print $$2; exit}'); \
+	if [ -z "$$CARD" ]; then \
+		echo "❌ Không tìm thấy ALSA card"; \
+		exit 1; \
+	fi; \
+	PROFILE='HiFi (HDMI1, HDMI2, HDMI3, Mic1, Mic2, Speaker)'; \
+	pactl set-card-profile "$$CARD" "$$PROFILE" 2>/dev/null || true; \
+	SINK=$$(pactl list sinks short | awk -v s="$(AUDIO_HDMI_SINK)" '$$2==s{print $$2; exit}'); \
+	if [ -z "$$SINK" ]; then \
+		SINK=$$(pactl list sinks short | awk '/HiFi__HDMI1__sink/{print $$2; exit}'); \
+	fi; \
+	if [ -z "$$SINK" ]; then \
+		SINK=$$(pactl list sinks short | awk '/HiFi__HDMI[0-9]+__sink/{print $$2; exit}'); \
+	fi; \
+	if [ -z "$$SINK" ]; then \
+		SINK=$$(pactl list sinks short | awk '/hdmi|HDMI/{print $$2; exit}'); \
+	fi; \
+	if [ -z "$$SINK" ]; then \
+		echo "❌ Không tìm thấy HDMI sink"; \
+		echo "⚠️  Hãy kiểm tra cáp/màn hình và chạy: make -f ... audio-check"; \
+		exit 1; \
+	fi; \
+	pactl set-default-sink "$$SINK"; \
+	if command -v wpctl >/dev/null 2>&1; then \
+		SID=$$(pactl list sinks short | awk -v s="$$SINK" '$$2==s{print $$1; exit}'); \
+		[ -n "$$SID" ] && wpctl set-default "$$SID" >/dev/null 2>&1 || true; \
+	fi; \
+	for i in $$(pactl list sink-inputs short | awk '{print $$1}'); do \
+		pactl move-sink-input $$i "$$SINK"; \
+	done; \
 	pactl set-sink-mute "$$SINK" 0; \
 	pactl set-sink-volume "$$SINK" 80%; \
 	echo "✅ Default sink -> $$SINK"

@@ -1,8 +1,10 @@
 bruno-bin
 dblab-bin
 google-chrome
+losslesscut-bin
 microsoft-edge-stable-bin
 onlyoffice-bin
+postman-bin
 smem
 ttf-meslo-nerd-font-powerlevel10k
 ttf-ms-fonts
