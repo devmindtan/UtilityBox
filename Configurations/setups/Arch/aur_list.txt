@@ -1,3 +1,4 @@
+android-studio
 bruno-bin
 dblab-bin
 google-chrome

@@ -9,3 +9,10 @@ export NVM_DIR="$HOME/.nvm"
 export EDITOR="nvim"
 
 export BAT_THEME="Visual Studio Dark+"
+
+
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
