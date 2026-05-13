@@ -155,6 +155,8 @@ cam-messenger:
 # ========================================
 audio-help:
 	@echo "🔊 Audio quick commands:"
+	@echo "  make -f ... audio-use          # Chọn thiết bị âm thanh từ danh sách (tương tác)"
+	@echo "  make -f ... audio-vol          # Tăng/giảm volume (tương tác)"
 	@echo "  make -f ... audio-check        # Kiểm tra trạng thái âm thanh"
 	@echo "  make -f ... audio-use-speaker  # Chuyển sang loa laptop"
 	@echo "  make -f ... audio-use-hdmi     # Chuyển sang âm thanh HDMI (ưu tiên HDMI1)"
@@ -163,6 +165,37 @@ audio-help:
 	@echo "  make -f ... audio-move-streams # Chuyển app đang phát sang default sink"
 	@echo "  make -f ... audio-restart      # Restart PipeWire + WirePlumber"
 	@echo "  make -f ... audio-test         # Phát âm test"
+
+audio-use:
+	@echo "🔊 --- CHỌN THIẾT BỊ ÂM THANH ---"; \
+	echo ""; \
+	DEFAULT=$$(pactl get-default-sink 2>/dev/null); \
+	TMPFILE=$$(mktemp); \
+	pactl list sinks | awk '/^\tName:/{n=$$2} /^\tDescription:/{sub(/^\tDescription: /,""); print n"|"$$0}' > "$$TMPFILE"; \
+	i=1; \
+	while IFS='|' read -r name desc; do \
+		if [ "$$name" = "$$DEFAULT" ]; then \
+			printf "  %d) %s  ← đang dùng\n     (%s)\n" "$$i" "$$name" "$$desc"; \
+		else \
+			printf "  %d) %s\n     (%s)\n" "$$i" "$$name" "$$desc"; \
+		fi; \
+		i=$$((i+1)); \
+	done < "$$TMPFILE"; \
+	TOTAL=$$((i-1)); \
+	if [ "$$TOTAL" -eq 0 ]; then echo "❌ Không tìm thấy sink nào"; rm -f "$$TMPFILE"; exit 1; fi; \
+	echo ""; \
+	printf "Chọn số [1-$$TOTAL]: "; \
+	read CHOICE < /dev/tty; \
+	SINK=$$(awk -F'|' -v n="$$CHOICE" 'NR==n{print $$1}' "$$TMPFILE"); \
+	rm -f "$$TMPFILE"; \
+	if [ -z "$$SINK" ]; then echo "❌ Lựa chọn không hợp lệ"; exit 1; fi; \
+	pactl set-default-sink "$$SINK"; \
+	for inp in $$(pactl list sink-inputs short | awk '{print $$1}'); do \
+		pactl move-sink-input "$$inp" "$$SINK"; \
+	done; \
+	pactl set-sink-mute "$$SINK" 0; \
+	pactl set-sink-volume "$$SINK" 80%; \
+	echo "✅ Default sink -> $$SINK"
 
 audio-check:
 	@echo "🔎 --- AUDIO CHECK ---"
@@ -174,6 +207,18 @@ audio-check:
 	@echo ""
 	@echo "📤 Sinks:"
 	@pactl list sinks short 2>/dev/null || echo "(không lấy được danh sách sinks)"
+	@echo ""
+	@echo "🔊 Volume / Mute (từng sink):"
+	@DEFAULT=$$(pactl get-default-sink 2>/dev/null); \
+	pactl list sinks | awk '\
+		/^\tName:/{name=$$2} \
+		/Volume:.*%/{if(!vol){vol=$$0; gsub(/^[[:space:]]+/,"",vol)}} \
+		/Mute:/{mute=$$2} \
+		/^$$/{ if(name!="") { \
+			printf "  %s  mute=%s  %s\n", name, mute, vol; \
+			name=""; vol=""; mute=""; \
+		}} \
+		END{ if(name!="") printf "  %s  mute=%s  %s\n", name, mute, vol; }' || true
 	@echo ""
 	@echo "🪪 Active profiles:"
 	@pactl list cards 2>/dev/null | grep -E "Name:|Active Profile:" || true
@@ -264,6 +309,46 @@ audio-move-streams:
 	done; \
 	echo "✅ Đã chuyển $$COUNT stream(s) sang $$DEFAULT"
 
+audio-vol:
+	@echo "🔊 --- ĐIỀU CHỈNH VOLUME ÂM THANH ---"; \
+	echo ""; \
+	DEFAULT=$$(pactl get-default-sink 2>/dev/null); \
+	TMPFILE=$$(mktemp); \
+	pactl list sinks | awk '/^\tName:/{n=$$2} /^\tDescription:/{sub(/^\tDescription: /,""); print n"|"$$0}' > "$$TMPFILE"; \
+	i=1; \
+	while IFS='|' read -r name desc; do \
+		VOL=$$(pactl list sinks | awk -v s="$$name" '/^\tName:/{cur=$$2} cur==s && /Volume:.*%/{match($$0,/[0-9]+%/); print substr($$0,RSTART,RLENGTH); exit}'); \
+		MUTE=$$(pactl list sinks | awk -v s="$$name" '/^\tName:/{cur=$$2} cur==s && /Mute:/{print $$2; exit}'); \
+		if [ "$$name" = "$$DEFAULT" ]; then \
+			printf "  %d) %-55s  vol=%-5s  mute=%s  ← đang dùng\n" "$$i" "$$name" "$$VOL" "$$MUTE"; \
+		else \
+			printf "  %d) %-55s  vol=%-5s  mute=%s\n" "$$i" "$$name" "$$VOL" "$$MUTE"; \
+		fi; \
+		i=$$((i+1)); \
+	done < "$$TMPFILE"; \
+	TOTAL=$$((i-1)); \
+	if [ "$$TOTAL" -eq 0 ]; then echo "❌ Không tìm thấy sink nào"; rm -f "$$TMPFILE"; exit 1; fi; \
+	echo ""; \
+	printf "Chọn sink [1-$$TOTAL, Enter = default]: "; \
+	read CHOICE < /dev/tty; \
+	if [ -z "$$CHOICE" ]; then \
+		SINK="$$DEFAULT"; \
+	else \
+		SINK=$$(awk -F'|' -v n="$$CHOICE" 'NR==n{print $$1}' "$$TMPFILE"); \
+	fi; \
+	rm -f "$$TMPFILE"; \
+	if [ -z "$$SINK" ]; then echo "❌ Lựa chọn không hợp lệ"; exit 1; fi; \
+	CURVOL=$$(pactl list sinks | awk -v s="$$SINK" '/^\tName:/{cur=$$2} cur==s && /Volume:.*%/{match($$0,/[0-9]+%/); print substr($$0,RSTART,RLENGTH); exit}'); \
+	echo ""; \
+	echo "Sink: $$SINK"; \
+	echo "Volume hiện tại: $$CURRVOL"; \
+	printf "Nhập % mới (VD: 80%%, +10%%, -10%%) hoặc Enter để bỏ qua: "; \
+	read NEWVOL < /dev/tty; \
+	if [ -z "$$NEWVOL" ]; then echo "⚠️  Không thay đổi"; exit 0; fi; \
+	pactl set-sink-volume "$$SINK" "$$NEWVOL"; \
+	ACTUAL=$$(pactl list sinks | awk -v s="$$SINK" '/^\tName:/{cur=$$2} cur==s && /Volume:.*%/{match($$0,/[0-9]+%/); print substr($$0,RSTART,RLENGTH); exit}'); \
+	echo "✅ Volume $$SINK -> $$ACTUAL"
+
 audio-restart:
 	@echo "♻️  --- RESTART AUDIO SERVICES ---"
 	@systemctl --user restart pipewire pipewire-pulse wireplumber
@@ -282,6 +367,8 @@ audio-test:
 # ========================================
 mic-help:
 	@echo "🎙️ Mic quick commands:"
+	@echo "  make -f ... mic-use           # Chọn microphone từ danh sách (tương tác)"
+	@echo "  make -f ... mic-vol           # Tăng/giảm volume mic (tương tác)"
 	@echo "  make -f ... mic-check         # Kiểm tra trạng thái microphone"
 	@echo "  make -f ... mic-use-laptop    # Chuyển sang mic laptop"
 	@echo "  make -f ... mic-use-wired     # Chuyển sang mic nối dây (jack 3.5mm)"
@@ -289,6 +376,37 @@ mic-help:
 	@echo "  make -f ... mic-unmute        # Bỏ mute mic default"
 	@echo "  make -f ... mic-move-streams  # Chuyển app đang thu sang default source"
 	@echo "  make -f ... mic-test          # Thu thử 3 giây vào /tmp"
+
+mic-use:
+	@echo "🎙️ --- CHỌN MICROPHONE ---"; \
+	echo ""; \
+	DEFAULT=$$(pactl get-default-source 2>/dev/null); \
+	TMPFILE=$$(mktemp); \
+	pactl list sources | awk '/^\tName:/{n=$$2} /^\tDescription:/{sub(/^\tDescription: /,""); if(n !~ /\.monitor$$/) print n"|"$$0}' > "$$TMPFILE"; \
+	i=1; \
+	while IFS='|' read -r name desc; do \
+		if [ "$$name" = "$$DEFAULT" ]; then \
+			printf "  %d) %s  ← đang dùng\n     (%s)\n" "$$i" "$$name" "$$desc"; \
+		else \
+			printf "  %d) %s\n     (%s)\n" "$$i" "$$name" "$$desc"; \
+		fi; \
+		i=$$((i+1)); \
+	done < "$$TMPFILE"; \
+	TOTAL=$$((i-1)); \
+	if [ "$$TOTAL" -eq 0 ]; then echo "❌ Không tìm thấy source nào"; rm -f "$$TMPFILE"; exit 1; fi; \
+	echo ""; \
+	printf "Chọn số [1-$$TOTAL]: "; \
+	read CHOICE < /dev/tty; \
+	SRC=$$(awk -F'|' -v n="$$CHOICE" 'NR==n{print $$1}' "$$TMPFILE"); \
+	rm -f "$$TMPFILE"; \
+	if [ -z "$$SRC" ]; then echo "❌ Lựa chọn không hợp lệ"; exit 1; fi; \
+	pactl set-default-source "$$SRC"; \
+	for out in $$(pactl list source-outputs short | awk '{print $$1}'); do \
+		pactl move-source-output "$$out" "$$SRC"; \
+	done; \
+	pactl set-source-mute "$$SRC" 0; \
+	pactl set-source-volume "$$SRC" 80%; \
+	echo "✅ Default source -> $$SRC"
 
 mic-check:
 	@echo "🔎 --- MIC CHECK ---"
@@ -299,7 +417,18 @@ mic-check:
 	@pactl get-default-source 2>/dev/null || echo "(không lấy được default source)"
 	@echo ""
 	@echo "🎙 Sources:"
-	@pactl list sources short 2>/dev/null || echo "(không lấy được danh sách sources)"
+	@pactl list sources short 2>/dev/null | awk '!/.monitor/{print}' || echo "(không lấy được danh sách sources)"
+	@echo ""
+	@echo "🎚 Volume / Mute (từng mic source):"
+	@pactl list sources | awk '\
+		/^\tName:/{name=$$2} \
+		/Volume:.*%/{if(!vol){vol=$$0; gsub(/^[[:space:]]+/,"",vol)}} \
+		/Mute:/{mute=$$2} \
+		/^$$/{ if(name!="" && name !~ /\.monitor$$/) { \
+			printf "  %s  mute=%s  %s\n", name, mute, vol; \
+			name=""; vol=""; mute=""; \
+		} else { name=""; vol=""; mute=""; }} \
+		END{ if(name!="" && name !~ /\.monitor$$/) printf "  %s  mute=%s  %s\n", name, mute, vol; }' || true
 	@echo ""
 	@echo "🪪 Active profiles:"
 	@pactl list cards 2>/dev/null | grep -E "Name:|Active Profile:" || true
@@ -370,6 +499,46 @@ mic-move-streams:
 		COUNT=$$((COUNT + 1)); \
 	done; \
 	echo "✅ Đã chuyển $$COUNT stream(s) sang $$DEFAULT"
+
+mic-vol:
+	@echo "🎙️ --- ĐIỀU CHỈNH VOLUME MICROPHONE ---"; \
+	echo ""; \
+	DEFAULT=$$(pactl get-default-source 2>/dev/null); \
+	TMPFILE=$$(mktemp); \
+	pactl list sources | awk '/^\tName:/{n=$$2} /^\tDescription:/{sub(/^\tDescription: /,""); if(n !~ /\.monitor$$/) print n"|"$$0}' > "$$TMPFILE"; \
+	i=1; \
+	while IFS='|' read -r name desc; do \
+		VOL=$$(pactl list sources | awk -v s="$$name" '/^\tName:/{cur=$$2} cur==s && /Volume:.*%/{match($$0,/[0-9]+%/); print substr($$0,RSTART,RLENGTH); exit}'); \
+		MUTE=$$(pactl list sources | awk -v s="$$name" '/^\tName:/{cur=$$2} cur==s && /Mute:/{print $$2; exit}'); \
+		if [ "$$name" = "$$DEFAULT" ]; then \
+			printf "  %d) %-55s  vol=%-5s  mute=%s  ← đang dùng\n" "$$i" "$$name" "$$VOL" "$$MUTE"; \
+		else \
+			printf "  %d) %-55s  vol=%-5s  mute=%s\n" "$$i" "$$name" "$$VOL" "$$MUTE"; \
+		fi; \
+		i=$$((i+1)); \
+	done < "$$TMPFILE"; \
+	TOTAL=$$((i-1)); \
+	if [ "$$TOTAL" -eq 0 ]; then echo "❌ Không tìm thấy source nào"; rm -f "$$TMPFILE"; exit 1; fi; \
+	echo ""; \
+	printf "Chọn source [1-$$TOTAL, Enter = default]: "; \
+	read CHOICE < /dev/tty; \
+	if [ -z "$$CHOICE" ]; then \
+		SRC="$$DEFAULT"; \
+	else \
+		SRC=$$(awk -F'|' -v n="$$CHOICE" 'NR==n{print $$1}' "$$TMPFILE"); \
+	fi; \
+	rm -f "$$TMPFILE"; \
+	if [ -z "$$SRC" ]; then echo "❌ Lựa chọn không hợp lệ"; exit 1; fi; \
+	CURVOL=$$(pactl list sources | awk -v s="$$SRC" '/^\tName:/{cur=$$2} cur==s && /Volume:.*%/{match($$0,/[0-9]+%/); print substr($$0,RSTART,RLENGTH); exit}'); \
+	echo ""; \
+	echo "Source: $$SRC"; \
+	echo "Volume hiện tại: $$CURVOL"; \
+	printf "Nhập %% mới (VD: 80%%, +10%%, -10%%) hoặc Enter để bỏ qua: "; \
+	read NEWVOL < /dev/tty; \
+	if [ -z "$$NEWVOL" ]; then echo "⚠️  Không thay đổi"; exit 0; fi; \
+	pactl set-source-volume "$$SRC" "$$NEWVOL"; \
+	ACTUAL=$$(pactl list sources | awk -v s="$$SRC" '/^\tName:/{cur=$$2} cur==s && /Volume:.*%/{match($$0,/[0-9]+%/); print substr($$0,RSTART,RLENGTH); exit}'); \
+	echo "✅ Volume $$SRC -> $$ACTUAL"
 
 mic-test:
 	@echo "🧪 --- TEST MIC (3 GIÂY) ---"
