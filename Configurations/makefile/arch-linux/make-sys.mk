@@ -2,6 +2,7 @@ PYTHON_VENV = ~/Documents/venv/venv-py314/bin/python3
 CAM_DIR = ~/Documents/code/UtilityBox/Apps/Camera
 SELF_MK = $(abspath $(lastword $(MAKEFILE_LIST)))
 AUDIO_HDMI_SINK ?= alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__HDMI1__sink
+BASE_DIR = /home/devmindtan/Documents/code/UtilityBox
 
 # ========================================
 # 🎯 INSTALL ALL - Setup hệ thống từ đầu
@@ -40,7 +41,7 @@ install-chrome:
 
 install-unikey:
 	@echo "⌨️  --- Đang cài đặt Unikey Input Method ---"
-	@sudo pacman -S --needed --noconfirm fcitx5 fcitx5-unikey fcitx5-configtool fcitx5-qt fcitx5-gtk
+	@sudo pacman -S --needed --noconfirm fcitx5 fcitx5-unikey  fcitx5-configtool fcitx5-qt fcitx5-gtk
 	@echo "✅ Đã cài xong. Hãy logout để áp dụng biến môi trường."
 
 # ========================================
@@ -572,36 +573,45 @@ unikey-control:
 # ========================================
 # 💾 BACKUP & RESTORE
 # ========================================
-backup-configs:
-	@echo "💾 --- Đang sao lưu configs ---"
-	@cp ~/.config/i3/config ~/Documents/code/UtilityBox/Configurations/setups/Arch/i3/config
-	@cp ~/.config/i3status/config ~/Documents/code/UtilityBox/Configurations/setups/Arch/i3status/config
-	@cp ~/.zshrc ~/Documents/code/UtilityBox/Configurations/tools/zsh/.zshrc
-	@cp ~/.p10k.zsh ~/Documents/code/UtilityBox/Configurations/tools/zsh/.p10k.zsh
-	@rsync -av --delete ~/.config/kitty/ ~/Documents/code/UtilityBox/Configurations/tools/kitty/
-	@rm -rf ~/Documents/code/UtilityBox/Configurations/tools/zsh/.oh-my-zsh
-	@mkdir -p ~/Documents/code/UtilityBox/Configurations/tools/zsh/.oh-my-zsh/custom
-	@rsync -av --exclude='.git' ~/.oh-my-zsh/custom/ ~/Documents/code/UtilityBox/Configurations/tools/zsh/.oh-my-zsh/custom/
-	@cp -r ~/.config/nvim/* ~/Documents/code/UtilityBox/Configurations/tools/nvim/
-	@pacman -Qqen > ~/Documents/code/UtilityBox/Configurations/setups/Arch/pkg_list.txt
-	@pacman -Qqem > ~/Documents/code/UtilityBox/Configurations/setups/Arch/aur_list.txt
-	@echo "✅ --- Đã sao lưu xong! ---"
+setup-symlinks:
+	@echo "🔗 --- Đang tạo Symlink từ hệ thống vào UtilityBox ---"
+	
+	# Zsh & Powerlevel10k (Link từ file thật ngoài HOME vào thư mục code)
+	@ln -sf ~/.zshrc $(BASE_DIR)/Configurations/tools/zsh/.zshrc
+	@ln -sf ~/.p10k.zsh $(BASE_DIR)/Configurations/tools/zsh/.p10k.zsh
+	
+	# Oh-My-Zsh Custom Plugins/Themes
+	@ln -nsf ~/.oh-my-zsh/custom/plugins $(BASE_DIR)/Configurations/tools/zsh/.oh-my-zsh/custom/plugins
+	@ln -nsf ~/.oh-my-zsh/custom/themes $(BASE_DIR)/Configurations/tools/zsh/.oh-my-zsh/custom/themes
+
+	# Thư mục ứng dụng (Kitty, Neovim, Hyprland)
+	@ln -nsf ~/.config/kitty $(BASE_DIR)/Configurations/tools/kitty
+	@ln -nsf ~/.config/nvim $(BASE_DIR)/Configurations/tools/nvim
+	@ln -nsf ~/.config/hypr $(BASE_DIR)/Configurations/tools/hypr
+
+	@echo "✅ --- Đã đồng bộ Symlink vào UtilityBox thành công! ---"
+
+update-pkg-lists:
+	@echo "📦 --- Đang cập nhật danh sách package ---"
+	@pacman -Qqen > $(BASE_DIR)/Configurations/setups/Arch/pkg_list.txt
+	@pacman -Qqem > $(BASE_DIR)/Configurations/setups/Arch/aur_list.txt
+	@echo "✅ --- Đã cập nhật xong pkg_list.txt và aur_list.txt ---"
 
 restore-configs:
 	@echo "📦 --- Đang khôi phục cấu hình ---"
-	@cp ~/Documents/code/UtilityBox/Configurations/setups/Arch/i3/config ~/.config/i3/config
-	@cp ~/Documents/code/UtilityBox/Configurations/setups/Arch/i3status/config ~/.config/i3status/config
-	@cp ~/Documents/code/UtilityBox/Configurations/tools/zsh/.zshrc ~/.zshrc
-	@cp ~/Documents/code/UtilityBox/Configurations/tools/zsh/.p10k.zsh ~/.p10k.zsh
-	@mkdir -p ~/.config/nvim && cp -r ~/Documents/code/UtilityBox/Configurations/tools/nvim/* ~/.config/nvim/
-	@mkdir -p ~/.oh-my-zsh/custom && cp -r ~/Documents/code/UtilityBox/Configurations/tools/zsh/custom/* ~/.oh-my-zsh/custom/
+	@cp $(BASE_DIR)/Configurations/setups/Arch/i3/config ~/.config/i3/config
+	@cp $(BASE_DIR)/Configurations/setups/Arch/i3status/config ~/.config/i3status/config
+	@cp $(BASE_DIR)/Configurations/tools/zsh/.zshrc ~/.zshrc
+	@cp $(BASE_DIR)/Configurations/tools/zsh/.p10k.zsh ~/.p10k.zsh
+	@mkdir -p ~/.config/nvim && cp -r $(BASE_DIR)/Configurations/tools/nvim/* ~/.config/nvim/
+	@mkdir -p ~/.oh-my-zsh/custom && cp -r $(BASE_DIR)/Configurations/tools/zsh/custom/* ~/.oh-my-zsh/custom/
 	@echo "✅ --- Đã khôi phục xong. Nhấn Mod+Shift+R để reload i3 ---"
 
 restore-packages:
 	@echo "📦 --- Đang cài đặt packages từ repo chính ---"
-	@sudo pacman -S --needed --noconfirm - < ~/Documents/code/UtilityBox/Configurations/setups/Arch/pkg_list.txt
+	@sudo pacman -S --needed --noconfirm - < $(BASE_DIR)/Configurations/setups/Arch/pkg_list.txt
 	@echo "📦 --- Đang cài đặt packages từ AUR ---"
-	@yay -S --needed --noconfirm - < ~/Documents/code/UtilityBox/Configurations/setups/Arch/aur_list.txt
+	@yay -S --needed --noconfirm - < $(BASE_DIR)/Configurations/setups/Arch/aur_list.txt
 	@echo "✅ --- Hoàn tất cài đặt toàn bộ phần mềm! ---"
 
 # ========================================
